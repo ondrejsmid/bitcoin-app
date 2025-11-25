@@ -1,0 +1,41 @@
+@page "/"
+@inject BlazorTableApp.Services.DataService DataService
+
+<h2>Table of 300 Values</h2>
+
+<button @onclick="Refresh">Refresh</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Value</th>
+            <th>Timestamp (UTC)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in items)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Value</td>
+                <td>@item.Timestamp.ToString("u")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IReadOnlyList<BlazorTableApp.Models.ValueItem> items = Array.Empty<BlazorTableApp.Models.ValueItem>();
+
+    protected override void OnInitialized()
+    {
+        items = DataService.GetAll();
+    }
+
+    private void Refresh()
+    {
+        DataService.Refresh();
+        items = DataService.GetAll();
+    }
+}
