@@ -33,17 +33,47 @@ public class DataService
 
             _items = new List<ValueItem>();
 
-            // Navigate to Data -> BTC-EUR
+            // Navigate to Data -> BTC-EUR: simple single-pass collection
             if (root.TryGetProperty("Data", out var dataElement) && dataElement.TryGetProperty("BTC-EUR", out var btcEurElement))
             {
-                // Extract all key-value pairs from BTC-EUR object
+                var keys = new[] { "PRICE", "LAST_PROCESSED_TRADE_PRICE", "BEST_BID", "BEST_ASK" };
+                var keySet = new HashSet<string>(keys, StringComparer.OrdinalIgnoreCase);
+
+                // Single pass: keep original property order. For predefined keys, multiply numeric values by 100.
                 foreach (var prop in btcEurElement.EnumerateObject())
                 {
-                    _items.Add(new ValueItem
+                    var name = prop.Name;
+                    var elem = prop.Value;
+
+                    if (keySet.Contains(name))
                     {
-                        Key = prop.Name,
-                        Value = FormatJsonValue(prop.Value)
-                    });
+                        string valueStr;
+                        if (elem.ValueKind == JsonValueKind.Number)
+                        {
+                            if (decimal.TryParse(elem.GetRawText(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var n))
+                                valueStr = (n * 1000).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+                            else
+                                valueStr = elem.GetRawText();
+                        }
+                        else if (elem.ValueKind == JsonValueKind.String)
+                        {
+                            var s = elem.GetString() ?? string.Empty;
+                            if (decimal.TryParse(s, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var n))
+                                valueStr = (n * 1000).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+                            else
+                                valueStr = s;
+                        }
+                        else
+                        {
+                            valueStr = FormatJsonValue(elem);
+                        }
+
+                        _items.Add(new ValueItem { Key = name, Value = valueStr });
+                    }
+                    else
+                    {
+                        _items.Add(new ValueItem { Key = name, Value = FormatJsonValue(elem) });
+                    }
                 }
             }
             else
