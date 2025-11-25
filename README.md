@@ -1,71 +1,39 @@
-# Bitcoin Course App (Blazor + API)
+# Blazor Table App
 
-A Blazor WebAssembly frontend displaying Bitcoin price data from CoinDesk, converted to CZK using CNB exchange rates via a local ASP.NET Core Web API backend.
+## Quick Start
 
-## Projects
-
-- **BlazorTableApp** — Blazor WebAssembly client (port 5001/http 5000)
-- **BlazorTableApi** — ASP.NET Core Web API (port 5000 for HTTP)
-
-## How to run
-
-### Option 1: Run both from solution
-
+### Terminal 1: Start Database
 ```bash
-cd /home/ondrej/bitcoin-app
-dotnet run --project blazor-table-api &
-sleep 2
-dotnet run --project blazor-table-app
+docker-compose up -d
 ```
 
-Or in separate terminals:
-
-**Terminal 1 — API:**
+### Terminal 2: Start API
 ```bash
-cd /home/ondrej/bitcoin-app/blazor-table-api
+cd blazor-table-api
 dotnet run --urls "http://localhost:5000"
 ```
 
-**Terminal 2 — Client (in another terminal):**
+### Terminal 3: Start Client
 ```bash
-cd /home/ondrej/bitcoin-app/blazor-table-app
+cd blazor-table-app
 dotnet run --urls "http://localhost:5001"
 ```
 
-Then open the browser to:
-- **Blazor UI**: http://localhost:5001
-- **API Swagger**: http://localhost:5000/swagger
+Then open http://localhost:5001 in your browser.
 
-### Option 2: Use dotnet watch
+## Pages
 
-```bash
-cd /home/ondrej/bitcoin-app/blazor-table-api
-dotnet watch run --urls "http://localhost:5000"
-# In another terminal
-cd /home/ondrej/bitcoin-app/blazor-table-app
-dotnet watch run --urls "http://localhost:5001"
-```
-
-## Architecture
-
-- **API** (`BlazorTableApi`):
-  - `CnbExchangeRateService`: Fetches EUR→CZK rate from Czech National Bank (CNB) API
-  - `ExchangeRateController.GetEurToCzk()`: Returns exchange rate as JSON
-
-- **Client** (`BlazorTableApp`):
-  - `DataService.FetchFromCoinDeskAsync()`: Fetches BTC-EUR from CoinDesk, multiplies predefined keys (PRICE, LAST_PROCESSED_TRADE_PRICE, BEST_BID, BEST_ASK) by the EUR→CZK rate retrieved from local API
-  - `Pages/Index.razor`: Polls every 5 seconds and displays the Bitcoin Course table
+- **Bitcoin Course** (`/`) — Live Bitcoin price data from CoinDesk with EUR→CZK conversion
+- **Stored Data** (`/stored`) — Database rows from SQL Server (currently showing seed data)
 
 ## Features
 
-- ✅ Polls CoinDesk API every 5 seconds (no hard page refresh)
-- ✅ Fetches EUR→CZK rate from CNB via local API
-- ✅ Multiplies predefined price fields by exchange rate (CZK conversion)
-- ✅ Preserves original JSON field order
-- ✅ Shows all BTC-EUR fields from CoinDesk response
+- ✅ Live Bitcoin prices from CoinDesk API
+- ✅ EUR to CZK exchange rate conversion
+- ✅ 5-second auto-polling (no hard refresh)
+- ✅ SQL Server database integration
+- ✅ Navigation between pages
 
-## Debugging
+## Additional Resources
 
-- Check browser DevTools Console for client-side logs
-- Check terminal output for API logs (Kestrel/middleware)
-- Add `Console.WriteLine()` to log trace paths
+For detailed setup instructions, troubleshooting, and architecture overview, see the complete documentation in the root directory.
