@@ -1,7 +1,7 @@
 @page "/"
 @inject BlazorTableApp.Services.DataService DataService
 
-<h2>Live Data</h2>
+<h2>Bitcoin Course</h2>
 
 <button @onclick="FetchData">Refresh</button>
 
@@ -38,9 +38,40 @@ else
     private IReadOnlyList<BlazorTableApp.Models.ValueItem> items = Array.Empty<BlazorTableApp.Models.ValueItem>();
     private bool loading = false;
 
+    private System.Threading.CancellationTokenSource? _cts;
+
     protected override async Task OnInitializedAsync()
     {
+        _cts = new System.Threading.CancellationTokenSource();
+        // initial load
         await FetchData();
+
+        // start background polling every 5 seconds
+        _ = Task.Run(async () =>
+        {
+            var token = _cts.Token;
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5), token);
+                    if (token.IsCancellationRequested) break;
+                    // fetch data and update UI
+                    await InvokeAsync(async () =>
+                    {
+                        await FetchData();
+                        StateHasChanged();
+                    });
+                }
+            }
+            catch (OperationCanceledException) { }
+        });
+    }
+
+    public void Dispose()
+    {
+        try { _cts?.Cancel(); } catch { }
+        _cts?.Dispose();
     }
 
     private async Task FetchData()
