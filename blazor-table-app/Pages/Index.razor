@@ -1,41 +1,53 @@
 @page "/"
 @inject BlazorTableApp.Services.DataService DataService
 
-<h2>Table of 300 Values</h2>
+<h2>Live Data</h2>
 
-<button @onclick="Refresh">Refresh</button>
+<button @onclick="FetchData">Refresh</button>
 
-<table>
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Value</th>
-            <th>Timestamp (UTC)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in items)
-        {
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (items.Count == 0)
+{
+    <p>No data available</p>
+}
+else
+{
+    <table>
+        <thead>
             <tr>
-                <td>@item.Id</td>
-                <td>@item.Value</td>
-                <td>@item.Timestamp.ToString("u")</td>
+                <th>Key</th>
+                <th>Value</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Key</td>
+                    <td>@item.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
     private IReadOnlyList<BlazorTableApp.Models.ValueItem> items = Array.Empty<BlazorTableApp.Models.ValueItem>();
+    private bool loading = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        items = DataService.GetAll();
+        await FetchData();
     }
 
-    private void Refresh()
+    private async Task FetchData()
     {
-        DataService.Refresh();
+        loading = true;
+        await DataService.FetchFromCoinDeskAsync();
         items = DataService.GetAll();
+        loading = false;
     }
 }
