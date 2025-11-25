@@ -1,13 +1,9 @@
 # Blazor Table App
 
-Simple Blazor WebAssembly application that shows a table of 300 generated values.
+- From blazor-table-app dir run dotnet run --urls "http://localhost:5001"
 
-Run locally:
+- From blazor-table-api dir run dotnet run --urls "http://localhost:5000"
 
-```bash
-cd blazor-table-app
-dotnet restore
-dotnet run
-```
+- From bitcoin-app run docker compose up -d
 
-Open `https://localhost:5001` (or the URL printed by `dotnet run`).
+- Open `https://localhost:5001` (or the URL printed by `dotnet run`).
