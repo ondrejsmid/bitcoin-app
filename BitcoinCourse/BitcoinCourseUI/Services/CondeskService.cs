@@ -12,7 +12,7 @@ namespace BitcoinCourseUI.Services
     internal interface ICondeskService
     {
         Task<List<BtcRecord>> GetBtcRecordsAsync();
-        Task SaveAsync();
+        Task SaveAsync(string note);
         Task<LastSnapshotResponse> GetLastSnapshotAsync();
     }
 
@@ -32,7 +32,7 @@ namespace BitcoinCourseUI.Services
             }
         }
 
-        public async Task SaveAsync()
+        public async Task SaveAsync(string note)
         {
             var records = await GetBtcRecordsAsync();
 
@@ -41,7 +41,13 @@ namespace BitcoinCourseUI.Services
             {
                 wc.Headers[HttpRequestHeader.ContentType] = "application/json";
 
-                string jsonBody = JsonConvert.SerializeObject(records);
+                var request = new SaveSnapshotRequest
+                {
+                    Note = note,
+                    Records = records
+                };
+
+                string jsonBody = JsonConvert.SerializeObject(request);
 
                 var json = await wc.UploadStringTaskAsync(new Uri(apiBase + "/api/Snapshots/Save"), "POST", jsonBody);
                 var js = new JavaScriptSerializer();

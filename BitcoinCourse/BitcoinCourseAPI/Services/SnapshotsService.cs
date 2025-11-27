@@ -8,7 +8,7 @@ namespace BitcoinCourseAPI.Services
 {
     public interface ISnapshotsService
     {
-        Task<IActionResult> SaveRecordsAsync(List<BtcRecord>? records);
+        Task<IActionResult> SaveRecordsAsync(List<BtcRecord>? records, string? note);
         Task<LastSnapshotResponse?> GetLastSnapshotAsync();
     }
 
@@ -21,7 +21,7 @@ namespace BitcoinCourseAPI.Services
             _db = db;
         }
 
-        public async Task<IActionResult> SaveRecordsAsync(List<BtcRecord>? records)
+        public async Task<IActionResult> SaveRecordsAsync(List<BtcRecord>? records, string? note)
         {
             if (records == null || records.Count == 0)
             {
@@ -29,7 +29,7 @@ namespace BitcoinCourseAPI.Services
             }
 
             // create snapshot
-            var snapshot = new Snapshot { Note = "dummy" };
+            var snapshot = new Snapshot { Note = note ?? string.Empty };
             _db.Snapshots.Add(snapshot);
             await _db.SaveChangesAsync();
 

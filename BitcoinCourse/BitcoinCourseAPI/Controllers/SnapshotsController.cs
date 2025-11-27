@@ -13,10 +13,14 @@ namespace BitcoinCourseAPI.Controllers
         public SnapshotsController(ISnapshotsService snapshotsService) => _snapshotsService = snapshotsService;
 
         [HttpPost("Save")]
-        //public async Task<IActionResult> Save([FromBody] List<BtcRecord> records)
-        public async Task<IActionResult> Save([FromBody]  List<BtcRecord> records)
+        public async Task<IActionResult> Save([FromBody] SaveSnapshotRequest request)
         {
-            await _snapshotsService.SaveRecordsAsync(records);
+            if (string.IsNullOrWhiteSpace(request.Note))
+            {
+                return BadRequest("Note is required");
+            }
+
+            await _snapshotsService.SaveRecordsAsync(request.Records, request.Note);
             return Ok();
         }
 

@@ -9,8 +9,20 @@
             <asp:Panel ID="PanelTable" runat="server">
                 <!-- Save snapshot button -->
                 <div class="mb-3">
-                    <asp:Button ID="SaveSnapshotButton" runat="server" CssClass="btn btn-primary" Text="Save Snapshot" OnClick="SaveSnapshotButton_Click" />
-                    <asp:Label ID="SnapshotStatus" runat="server" CssClass="ms-3" />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <asp:TextBox ID="SnapshotNoteTextBox" runat="server" CssClass="form-control" placeholder="Enter note for snapshot" />
+                            <asp:RequiredFieldValidator ID="NoteRequiredValidator" runat="server" 
+                                ControlToValidate="SnapshotNoteTextBox" 
+                                ErrorMessage="Note is required" 
+                                CssClass="text-danger" 
+                                Display="Dynamic" />
+                        </div>
+                        <div class="col-md-8">
+                            <asp:Button ID="SaveSnapshotButton" runat="server" CssClass="btn btn-primary" Text="Save Snapshot" OnClick="SaveSnapshotButton_Click" />
+                            <asp:Label ID="SnapshotStatus" runat="server" CssClass="ms-3" />
+                        </div>
+                    </div>
                 </div>
 
                 <asp:UpdatePanel ID="upGrid" runat="server" UpdateMode="Conditional">

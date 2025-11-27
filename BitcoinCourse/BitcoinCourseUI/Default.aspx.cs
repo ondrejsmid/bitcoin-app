@@ -19,11 +19,6 @@ namespace BitcoinCourseUI
     {
         private readonly ICondeskService _condeskService = new CondeskService(); // TODO use DI
 
-        // Control declaration for GridView
-        protected global::System.Web.UI.WebControls.GridView GridViewData;
-        protected global::System.Web.UI.WebControls.Button SaveSnapshotButton;
-        protected global::System.Web.UI.WebControls.Label SnapshotStatus;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -56,7 +51,15 @@ namespace BitcoinCourseUI
 
         protected async void SaveSnapshotButton_Click(object sender, EventArgs e)
         {
-            await _condeskService.SaveAsync();
+            if (!Page.IsValid)
+            {
+                return;
+            }
+
+            var note = SnapshotNoteTextBox.Text.Trim();
+            await _condeskService.SaveAsync(note);
+            SnapshotNoteTextBox.Text = string.Empty;
+            SnapshotStatus.Text = "Snapshot saved successfully!";
         }
     }
 }
