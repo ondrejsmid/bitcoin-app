@@ -10,10 +10,35 @@ namespace BitcoinCourseUI
     public partial class Stored : Page
     {
         private readonly ICondeskService _condeskService = new CondeskService();
+        
         private int CurrentSnapshotId
         {
             get { return ViewState["CurrentSnapshotId"] != null ? (int)ViewState["CurrentSnapshotId"] : 0; }
             set { ViewState["CurrentSnapshotId"] = value; }
+        }
+
+        private string SnapshotSortExpression
+        {
+            get { return ViewState["SnapshotSortExpression"] as string ?? "Id"; }
+            set { ViewState["SnapshotSortExpression"] = value; }
+        }
+
+        private string SnapshotSortDirection
+        {
+            get { return ViewState["SnapshotSortDirection"] as string ?? "DESC"; }
+            set { ViewState["SnapshotSortDirection"] = value; }
+        }
+
+        private string DataSortExpression
+        {
+            get { return ViewState["DataSortExpression"] as string ?? "Label"; }
+            set { ViewState["DataSortExpression"] = value; }
+        }
+
+        private string DataSortDirection
+        {
+            get { return ViewState["DataSortDirection"] as string ?? "ASC"; }
+            set { ViewState["DataSortDirection"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -38,7 +63,29 @@ namespace BitcoinCourseUI
             NoSnapshotMessage.Visible = false;
             SnapshotContentPanel.Visible = true;
 
-            GridViewSnapshots.DataSource = snapshots;
+            var dt = new DataTable();
+            dt.Columns.Add("Id", typeof(int));
+            dt.Columns.Add("Note", typeof(string));
+
+            foreach (var snapshot in snapshots)
+            {
+                dt.Rows.Add(snapshot.Id, snapshot.Note ?? string.Empty);
+            }
+
+            // Apply filter
+            var filterText = SnapshotFilterTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(filterText))
+            {
+                var dv = dt.DefaultView;
+                dv.RowFilter = $"Note LIKE '%{filterText.Replace("'", "''")}%'";
+                dt = dv.ToTable();
+            }
+
+            // Apply sorting
+            var dv2 = dt.DefaultView;
+            dv2.Sort = $"{SnapshotSortExpression} {SnapshotSortDirection}";
+
+            GridViewSnapshots.DataSource = dv2;
             GridViewSnapshots.DataBind();
         }
 
@@ -76,7 +123,20 @@ namespace BitcoinCourseUI
                 dt.Rows.Add(item.FieldName, item.Value);
             }
 
-            GridViewStored.DataSource = dt;
+            // Apply filter
+            var filterText = DataFilterTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(filterText))
+            {
+                var dv = dt.DefaultView;
+                dv.RowFilter = $"Label LIKE '%{filterText.Replace("'", "''")}%' OR Value LIKE '%{filterText.Replace("'", "''")}%'";
+                dt = dv.ToTable();
+            }
+
+            // Apply sorting
+            var dv2 = dt.DefaultView;
+            dv2.Sort = $"{DataSortExpression} {DataSortDirection}";
+
+            GridViewStored.DataSource = dv2;
             GridViewStored.DataBind();
         }
 
@@ -126,6 +186,44 @@ namespace BitcoinCourseUI
         {
             EditNotePanel.Visible = false;
             EditStatusLabel.Text = "";
+        }
+
+        protected void GridViewSnapshots_Sorting(object sender, System.Web.UI.WebControls.GridViewSortEventArgs e)
+        {
+            if (SnapshotSortExpression == e.SortExpression)
+            {
+                SnapshotSortDirection = SnapshotSortDirection == "ASC" ? "DESC" : "ASC";
+            }
+            else
+            {
+                SnapshotSortExpression = e.SortExpression;
+                SnapshotSortDirection = "ASC";
+            }
+            RegisterAsyncTask(new PageAsyncTask(LoadSnapshots));
+        }
+
+        protected void GridViewStored_Sorting(object sender, System.Web.UI.WebControls.GridViewSortEventArgs e)
+        {
+            if (DataSortExpression == e.SortExpression)
+            {
+                DataSortDirection = DataSortDirection == "ASC" ? "DESC" : "ASC";
+            }
+            else
+            {
+                DataSortExpression = e.SortExpression;
+                DataSortDirection = "ASC";
+            }
+            RegisterAsyncTask(new PageAsyncTask(async () => await LoadSnapshotDetails(CurrentSnapshotId)));
+        }
+
+        protected void SnapshotFilterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(LoadSnapshots));
+        }
+
+        protected void DataFilterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(async () => await LoadSnapshotDetails(CurrentSnapshotId)));
         }
     }
 }

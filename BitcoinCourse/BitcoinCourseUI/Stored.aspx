@@ -12,14 +12,19 @@
             <div class="row" runat="server" id="SnapshotContentPanel" visible="false">
                 <div class="col-md-4">
                     <h4>Snapshots</h4>
+                    <div class="mb-2">
+                        <asp:TextBox ID="SnapshotFilterTextBox" runat="server" CssClass="form-control form-control-sm" placeholder="Filter by Note..." AutoPostBack="true" OnTextChanged="SnapshotFilterTextBox_TextChanged" />
+                    </div>
                     <asp:GridView ID="GridViewSnapshots" runat="server" AutoGenerateColumns="false" 
-                        CssClass="table table-hover" EmptyDataText="No snapshots"
+                        CssClass="table table-hover table-sm" EmptyDataText="No snapshots"
                         OnSelectedIndexChanged="GridViewSnapshots_SelectedIndexChanged"
+                        OnSorting="GridViewSnapshots_Sorting"
+                        AllowSorting="true"
                         DataKeyNames="Id">
                         <Columns>
                             <asp:CommandField ShowSelectButton="True" SelectText="View" ButtonType="Button" />
-                            <asp:BoundField DataField="Id" HeaderText="ID" />
-                            <asp:BoundField DataField="Note" HeaderText="Note" />
+                            <asp:BoundField DataField="Id" HeaderText="ID" SortExpression="Id" />
+                            <asp:BoundField DataField="Note" HeaderText="Note" SortExpression="Note" />
                         </Columns>
                         <SelectedRowStyle BackColor="#D1E8FF" />
                     </asp:GridView>
@@ -55,10 +60,17 @@
                             </div>
                         </asp:Panel>
                         
-                        <asp:GridView ID="GridViewStored" runat="server" AutoGenerateColumns="false" CssClass="table table-striped" EmptyDataText="No data">
+                        <div class="mb-2">
+                            <asp:TextBox ID="DataFilterTextBox" runat="server" CssClass="form-control form-control-sm" placeholder="Filter by Name or Value..." AutoPostBack="true" OnTextChanged="DataFilterTextBox_TextChanged" />
+                        </div>
+                        
+                        <asp:GridView ID="GridViewStored" runat="server" AutoGenerateColumns="false" 
+                            CssClass="table table-striped table-sm" EmptyDataText="No data"
+                            OnSorting="GridViewStored_Sorting"
+                            AllowSorting="true">
                             <Columns>
-                                <asp:BoundField DataField="Label" HeaderText="Name" />
-                                <asp:BoundField DataField="Value" HeaderText="Value" />
+                                <asp:BoundField DataField="Label" HeaderText="Name" SortExpression="Label" />
+                                <asp:BoundField DataField="Value" HeaderText="Value" SortExpression="Value" />
                             </Columns>
                         </asp:GridView>
                     </asp:Panel>

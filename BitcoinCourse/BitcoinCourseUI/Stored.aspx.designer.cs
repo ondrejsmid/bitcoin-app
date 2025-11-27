@@ -15,6 +15,8 @@ namespace BitcoinCourseUI
         
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl SnapshotContentPanel;
         
+        protected global::System.Web.UI.WebControls.TextBox SnapshotFilterTextBox;
+        
         protected global::System.Web.UI.WebControls.GridView GridViewSnapshots;
         
         protected global::System.Web.UI.WebControls.Panel SnapshotDetailPanel;
@@ -34,6 +36,8 @@ namespace BitcoinCourseUI
         protected global::System.Web.UI.WebControls.Button CancelEditButton;
         
         protected global::System.Web.UI.WebControls.Label EditStatusLabel;
+        
+        protected global::System.Web.UI.WebControls.TextBox DataFilterTextBox;
         
         protected global::System.Web.UI.WebControls.GridView GridViewStored;
     }
