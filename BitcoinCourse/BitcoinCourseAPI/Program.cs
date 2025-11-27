@@ -1,4 +1,6 @@
 using BitcoinCourseAPI.Services;
+using BitcoinCourseAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddHttpClient<IBtcDataService, BtcDataService>();
 builder.Services.AddTransient<ICnbConversionService, CnbConversionService>();
 builder.Services.AddTransient<ISnapshotsService, SnapshotsService>();
+
+// Register EF DbContext
+var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrEmpty(conn))
+{
+    builder.Services.AddDbContext<BitcoinDbContext>(opts => opts.UseSqlServer(conn));
+}
 
 var app = builder.Build();
 
