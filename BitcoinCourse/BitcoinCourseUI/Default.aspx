@@ -4,7 +4,7 @@
 
     <main>
         <section class="row" aria-labelledby="staticTableTitle">
-            <h2 id="staticTableTitle">Sample Dynamic Table</h2>
+            <h2 id="staticTableTitle">Live Data</h2>
 
             <asp:Panel ID="PanelTable" runat="server">
                 <!-- Save snapshot button -->
