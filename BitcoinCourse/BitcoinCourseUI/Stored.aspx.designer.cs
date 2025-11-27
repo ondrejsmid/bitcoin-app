@@ -21,6 +21,20 @@ namespace BitcoinCourseUI
         
         protected global::System.Web.UI.WebControls.Label SnapshotNoteLabel;
         
+        protected global::System.Web.UI.WebControls.LinkButton EditNoteButton;
+        
+        protected global::System.Web.UI.WebControls.Panel EditNotePanel;
+        
+        protected global::System.Web.UI.WebControls.TextBox EditNoteTextBox;
+        
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator EditNoteRequiredValidator;
+        
+        protected global::System.Web.UI.WebControls.Button SaveNoteButton;
+        
+        protected global::System.Web.UI.WebControls.Button CancelEditButton;
+        
+        protected global::System.Web.UI.WebControls.Label EditStatusLabel;
+        
         protected global::System.Web.UI.WebControls.GridView GridViewStored;
     }
 }

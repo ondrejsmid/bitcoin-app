@@ -56,5 +56,23 @@ namespace BitcoinCourseAPI.Controllers
 
             return Ok(snapshot);
         }
+
+        [HttpPut("{id}/note")]
+        public async Task<IActionResult> UpdateNote(int id, [FromBody] string note)
+        {
+            if (string.IsNullOrWhiteSpace(note))
+            {
+                return BadRequest("Note is required");
+            }
+
+            var result = await _snapshotsService.UpdateSnapshotNoteAsync(id, note);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
     }
 }

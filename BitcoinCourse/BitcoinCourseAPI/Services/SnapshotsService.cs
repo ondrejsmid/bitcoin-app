@@ -12,6 +12,7 @@ namespace BitcoinCourseAPI.Services
         Task<LastSnapshotResponse?> GetLastSnapshotAsync();
         Task<List<SnapshotListItem>> GetAllSnapshotsAsync();
         Task<LastSnapshotResponse?> GetSnapshotByIdAsync(int id);
+        Task<bool> UpdateSnapshotNoteAsync(int id, string note);
     }
 
     public class SnapshotsService : ISnapshotsService
@@ -115,6 +116,21 @@ namespace BitcoinCourseAPI.Services
             };
 
             return response;
+        }
+
+        public async Task<bool> UpdateSnapshotNoteAsync(int id, string note)
+        {
+            var snapshot = await _db.Snapshots.FindAsync(id);
+            
+            if (snapshot == null)
+            {
+                return false;
+            }
+
+            snapshot.Note = note;
+            await _db.SaveChangesAsync();
+            
+            return true;
         }
     }
 }
