@@ -14,6 +14,8 @@ namespace BitcoinCourseUI.Services
         Task<List<BtcRecord>> GetBtcRecordsAsync();
         Task SaveAsync(string note);
         Task<LastSnapshotResponse> GetLastSnapshotAsync();
+        Task<List<SnapshotListItem>> GetAllSnapshotsAsync();
+        Task<LastSnapshotResponse> GetSnapshotByIdAsync(int id);
     }
 
     internal class CondeskService : ICondeskService
@@ -61,6 +63,37 @@ namespace BitcoinCourseUI.Services
             using (var wc = new WebClient())
             {
                 var url = LocalBase + "/api/Snapshots/Last";
+                var json = await wc.DownloadStringTaskAsync(new Uri(url));
+                
+                if (string.IsNullOrWhiteSpace(json) || json == "null")
+                {
+                    return null;
+                }
+
+                var js = new JavaScriptSerializer();
+                var snapshot = js.Deserialize<LastSnapshotResponse>(json);
+                return snapshot;
+            }
+        }
+
+        public async Task<List<SnapshotListItem>> GetAllSnapshotsAsync()
+        {
+            using (var wc = new WebClient())
+            {
+                var url = LocalBase + "/api/Snapshots/All";
+                var json = await wc.DownloadStringTaskAsync(new Uri(url));
+                
+                var js = new JavaScriptSerializer();
+                var snapshots = js.Deserialize<List<SnapshotListItem>>(json);
+                return snapshots ?? new List<SnapshotListItem>();
+            }
+        }
+
+        public async Task<LastSnapshotResponse> GetSnapshotByIdAsync(int id)
+        {
+            using (var wc = new WebClient())
+            {
+                var url = LocalBase + $"/api/Snapshots/{id}";
                 var json = await wc.DownloadStringTaskAsync(new Uri(url));
                 
                 if (string.IsNullOrWhiteSpace(json) || json == "null")

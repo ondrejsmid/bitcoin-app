@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 
 namespace BitcoinCourseUI
 {
@@ -14,40 +15,62 @@ namespace BitcoinCourseUI
         {
             if (!IsPostBack)
             {
-                RegisterAsyncTask(new PageAsyncTask(LoadLastSnapshot));
+                RegisterAsyncTask(new PageAsyncTask(LoadSnapshots));
             }
         }
 
-        private async Task LoadLastSnapshot()
+        private async Task LoadSnapshots()
         {
-            var lastSnapshot = await _condeskService.GetLastSnapshotAsync();
+            var snapshots = await _condeskService.GetAllSnapshotsAsync();
 
-            if (lastSnapshot == null)
+            if (snapshots == null || snapshots.Count == 0)
             {
                 NoSnapshotMessage.Visible = true;
-                SnapshotInfoPanel.Visible = false;
-                GridViewStored.Visible = false;
+                SnapshotContentPanel.Visible = false;
                 return;
             }
 
-            // Display snapshot info
             NoSnapshotMessage.Visible = false;
-            SnapshotInfoPanel.Visible = true;
-            SnapshotNoteLabel.Text = string.IsNullOrEmpty(lastSnapshot.Note) ? "(no note)" : lastSnapshot.Note;
+            SnapshotContentPanel.Visible = true;
+
+            GridViewSnapshots.DataSource = snapshots;
+            GridViewSnapshots.DataBind();
+        }
+
+        protected async void GridViewSnapshots_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (GridViewSnapshots.SelectedDataKey != null)
+            {
+                int snapshotId = (int)GridViewSnapshots.SelectedDataKey.Value;
+                await LoadSnapshotDetails(snapshotId);
+            }
+        }
+
+        private async Task LoadSnapshotDetails(int snapshotId)
+        {
+            var snapshot = await _condeskService.GetSnapshotByIdAsync(snapshotId);
+
+            if (snapshot == null)
+            {
+                SnapshotDetailPanel.Visible = false;
+                return;
+            }
+
+            SnapshotDetailPanel.Visible = true;
+            SnapshotNoteLabel.Text = string.IsNullOrEmpty(snapshot.Note) ? "(no note)" : snapshot.Note;
 
             // Bind data to GridView
             var dt = new DataTable();
             dt.Columns.Add("Label");
             dt.Columns.Add("Value");
 
-            foreach (var item in lastSnapshot.Data)
+            foreach (var item in snapshot.Data)
             {
                 dt.Rows.Add(item.FieldName, item.Value);
             }
 
             GridViewStored.DataSource = dt;
             GridViewStored.DataBind();
-            GridViewStored.Visible = true;
         }
     }
 }

@@ -10,6 +10,8 @@ namespace BitcoinCourseAPI.Services
     {
         Task<IActionResult> SaveRecordsAsync(List<BtcRecord>? records, string? note);
         Task<LastSnapshotResponse?> GetLastSnapshotAsync();
+        Task<List<SnapshotListItem>> GetAllSnapshotsAsync();
+        Task<LastSnapshotResponse?> GetSnapshotByIdAsync(int id);
     }
 
     public class SnapshotsService : ISnapshotsService
@@ -67,6 +69,45 @@ namespace BitcoinCourseAPI.Services
                 Id = lastSnapshot.Id,
                 Note = lastSnapshot.Note,
                 Data = lastSnapshot.Rows.Select(r => new BtcRecord
+                {
+                    FieldName = r.BtcFieldName,
+                    Value = r.BtcFieldValue
+                }).ToList()
+            };
+
+            return response;
+        }
+
+        public async Task<List<SnapshotListItem>> GetAllSnapshotsAsync()
+        {
+            var snapshots = await _db.Snapshots
+                .OrderByDescending(s => s.Id)
+                .Select(s => new SnapshotListItem
+                {
+                    Id = s.Id,
+                    Note = s.Note
+                })
+                .ToListAsync();
+
+            return snapshots;
+        }
+
+        public async Task<LastSnapshotResponse?> GetSnapshotByIdAsync(int id)
+        {
+            var snapshot = await _db.Snapshots
+                .Include(s => s.Rows)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (snapshot == null)
+            {
+                return null;
+            }
+
+            var response = new LastSnapshotResponse
+            {
+                Id = snapshot.Id,
+                Note = snapshot.Note,
+                Data = snapshot.Rows.Select(r => new BtcRecord
                 {
                     FieldName = r.BtcFieldName,
                     Value = r.BtcFieldValue

@@ -13,7 +13,11 @@ namespace BitcoinCourseUI
     {
         protected global::System.Web.UI.WebControls.Label NoSnapshotMessage;
         
-        protected global::System.Web.UI.WebControls.Panel SnapshotInfoPanel;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SnapshotContentPanel;
+        
+        protected global::System.Web.UI.WebControls.GridView GridViewSnapshots;
+        
+        protected global::System.Web.UI.WebControls.Panel SnapshotDetailPanel;
         
         protected global::System.Web.UI.WebControls.Label SnapshotNoteLabel;
         

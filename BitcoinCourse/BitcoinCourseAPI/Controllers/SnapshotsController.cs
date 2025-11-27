@@ -31,10 +31,30 @@ namespace BitcoinCourseAPI.Controllers
             
             if (lastSnapshot == null)
             {
-                return Ok(null);
+                return Ok(null); // Returns null in JSON response
             }
 
             return Ok(lastSnapshot);
+        }
+
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAll()
+        {
+            var snapshots = await _snapshotsService.GetAllSnapshotsAsync();
+            return Ok(snapshots);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var snapshot = await _snapshotsService.GetSnapshotByIdAsync(id);
+            
+            if (snapshot == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(snapshot);
         }
     }
 }
