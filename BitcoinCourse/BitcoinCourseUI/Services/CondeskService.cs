@@ -13,6 +13,7 @@ namespace BitcoinCourseUI.Services
     {
         Task<List<BtcRecord>> GetBtcRecordsAsync();
         Task SaveAsync();
+        Task<LastSnapshotResponse> GetLastSnapshotAsync();
     }
 
     internal class CondeskService : ICondeskService
@@ -46,6 +47,24 @@ namespace BitcoinCourseUI.Services
                 var js = new JavaScriptSerializer();
                 var obj = js.Deserialize<Dictionary<string, object>>(json);
                 var saved = obj != null && obj.ContainsKey("saved") ? obj["saved"].ToString() : "0";
+            }
+        }
+
+        public async Task<LastSnapshotResponse> GetLastSnapshotAsync()
+        {
+            using (var wc = new WebClient())
+            {
+                var url = LocalBase + "/api/Snapshots/Last";
+                var json = await wc.DownloadStringTaskAsync(new Uri(url));
+                
+                if (string.IsNullOrWhiteSpace(json) || json == "null")
+                {
+                    return null;
+                }
+
+                var js = new JavaScriptSerializer();
+                var snapshot = js.Deserialize<LastSnapshotResponse>(json);
+                return snapshot;
             }
         }
     }

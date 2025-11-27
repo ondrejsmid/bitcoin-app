@@ -11,6 +11,12 @@ namespace BitcoinCourseUI
 {
     public partial class Stored
     {
+        protected global::System.Web.UI.WebControls.Label NoSnapshotMessage;
+        
+        protected global::System.Web.UI.WebControls.Panel SnapshotInfoPanel;
+        
+        protected global::System.Web.UI.WebControls.Label SnapshotNoteLabel;
+        
         protected global::System.Web.UI.WebControls.GridView GridViewStored;
     }
 }
