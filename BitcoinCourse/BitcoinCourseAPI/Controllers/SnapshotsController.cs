@@ -14,9 +14,9 @@ namespace BitcoinCourseAPI.Controllers
 
         [HttpPost("Save")]
         //public async Task<IActionResult> Save([FromBody] List<BtcRecord> records)
-        public async Task<IActionResult> Save()
+        public async Task<IActionResult> Save([FromBody]  List<BtcRecord> records)
         {
-            await _snapshotsService.SaveRecordsAsync(new List<BtcRecord>() { new BtcRecord { FieldName = "aa", Value = "11" }, new BtcRecord { FieldName = "bb", Value = "22" } });
+            await _snapshotsService.SaveRecordsAsync(records);
             return Ok();
         }
     }

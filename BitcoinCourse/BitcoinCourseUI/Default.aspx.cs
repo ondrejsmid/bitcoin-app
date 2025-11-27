@@ -1,15 +1,17 @@
-﻿using System;
+﻿using BitcoinCourseUI.Services;
+using Contracts;
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data;
-using System.Net;
-using System.Web.Script.Serialization;
-using BitcoinCourseUI.Services;
-using System.Threading.Tasks;
 
 namespace BitcoinCourseUI
 {
@@ -54,25 +56,7 @@ namespace BitcoinCourseUI
 
         protected async void SaveSnapshotButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                SnapshotStatus.Text = "Saving...";
-                var apiBase = "http://localhost:5041"; // adjust port if API runs on different port
-                using (var wc = new WebClient())
-                {
-                    wc.Headers[HttpRequestHeader.ContentType] = "application/json";
-                    // POST with empty body
-                    var json = await wc.UploadStringTaskAsync(new Uri(apiBase + "/api/Snapshots/Save"), "POST", string.Empty);
-                    var js = new JavaScriptSerializer();
-                    var obj = js.Deserialize<Dictionary<string, object>>(json);
-                    var saved = obj != null && obj.ContainsKey("saved") ? obj["saved"].ToString() : "0";
-                    SnapshotStatus.Text = $"Saved {saved} records";
-                }
-            }
-            catch (Exception ex)
-            {
-                SnapshotStatus.Text = "Error: " + ex.Message;
-            }
+            await _condeskService.SaveAsync();
         }
     }
 }
