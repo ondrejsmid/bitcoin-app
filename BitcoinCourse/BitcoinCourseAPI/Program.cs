@@ -15,11 +15,8 @@ builder.Services.AddTransient<ICnbConversionService, CnbConversionService>();
 builder.Services.AddTransient<ISnapshotsService, SnapshotsService>();
 
 // Register EF DbContext
-var conn = builder.Configuration.GetConnectionString("DefaultConnection");
-if (!string.IsNullOrEmpty(conn))
-{
-    builder.Services.AddDbContext<BitcoinDbContext>(opts => opts.UseSqlServer(conn));
-}
+
+builder.Services.AddDbContext<BitcoinDbContext>(opts => opts.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=ondrej-bitcoinapp;Trusted_Connection=True;TrustServerCertificate=True;"));
 
 var app = builder.Build();
 
