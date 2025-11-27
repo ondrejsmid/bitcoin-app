@@ -1,4 +1,4 @@
-<%@ Page Title="Stored Data" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Stored.aspx.cs" Inherits="BitcoinCourseUI.Stored" Async="true"%>
+<%@ Page Title="Saved Data" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Stored.aspx.cs" Inherits="BitcoinCourseUI.Stored" Async="true"%>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <main>
