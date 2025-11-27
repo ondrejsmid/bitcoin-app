@@ -33,7 +33,7 @@ namespace BitcoinCourseUI
             var dt = new DataTable();
             dt.Columns.Add("Label");
             dt.Columns.Add("Value");
-           
+
             var condeskData = await _condeskService.GetBtcRecordsAsync();
             foreach (var condeskItem in condeskData)
             {
@@ -42,6 +42,12 @@ namespace BitcoinCourseUI
 
             GridViewData.DataSource = dt;
             GridViewData.DataBind();
+        }
+
+        protected void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            // Run the same async load on timer tick
+            RegisterAsyncTask(new PageAsyncTask(LoadData));
         }
     }
 }
