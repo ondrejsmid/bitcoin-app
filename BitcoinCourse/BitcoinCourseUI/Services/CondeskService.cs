@@ -17,6 +17,7 @@ namespace BitcoinCourseUI.Services
         Task<List<SnapshotListItem>> GetAllSnapshotsAsync();
         Task<LastSnapshotResponse> GetSnapshotByIdAsync(int id);
         Task<bool> UpdateSnapshotNoteAsync(int id, string note);
+        Task<bool> DeleteSnapshotAsync(int id);
     }
 
     internal class CondeskService : ICondeskService
@@ -118,6 +119,23 @@ namespace BitcoinCourseUI.Services
                     var url = LocalBase + $"/api/Snapshots/{id}/note";
                     var jsonBody = JsonConvert.SerializeObject(note);
                     await wc.UploadStringTaskAsync(new Uri(url), "PUT", jsonBody);
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteSnapshotAsync(int id)
+        {
+            try
+            {
+                using (var wc = new WebClient())
+                {
+                    var url = LocalBase + $"/api/Snapshots/{id}";
+                    await wc.UploadStringTaskAsync(new Uri(url), "DELETE", string.Empty);
                     return true;
                 }
             }

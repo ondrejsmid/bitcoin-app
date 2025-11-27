@@ -74,5 +74,18 @@ namespace BitcoinCourseAPI.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _snapshotsService.DeleteSnapshotAsync(id);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
     }
 }

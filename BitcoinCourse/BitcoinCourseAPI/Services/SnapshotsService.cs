@@ -13,6 +13,7 @@ namespace BitcoinCourseAPI.Services
         Task<List<SnapshotListItem>> GetAllSnapshotsAsync();
         Task<LastSnapshotResponse?> GetSnapshotByIdAsync(int id);
         Task<bool> UpdateSnapshotNoteAsync(int id, string note);
+        Task<bool> DeleteSnapshotAsync(int id);
     }
 
     public class SnapshotsService : ISnapshotsService
@@ -128,6 +129,24 @@ namespace BitcoinCourseAPI.Services
             }
 
             snapshot.Note = note;
+            await _db.SaveChangesAsync();
+            
+            return true;
+        }
+
+        public async Task<bool> DeleteSnapshotAsync(int id)
+        {
+            var snapshot = await _db.Snapshots
+                .Include(s => s.Rows)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            
+            if (snapshot == null)
+            {
+                return false;
+            }
+
+            _db.SnapshotRows.RemoveRange(snapshot.Rows);
+            _db.Snapshots.Remove(snapshot);
             await _db.SaveChangesAsync();
             
             return true;

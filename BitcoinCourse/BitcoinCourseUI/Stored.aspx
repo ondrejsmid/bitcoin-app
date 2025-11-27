@@ -32,7 +32,10 @@
                 
                 <div class="col-md-8">
                     <asp:Panel ID="SnapshotDetailPanel" runat="server" Visible="false">
-                        <h4>Snapshot Details</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Snapshot Details</h4>
+                            <asp:Button ID="DeleteSnapshotButton" runat="server" CssClass="btn btn-danger btn-sm" Text="Delete Snapshot" OnClick="DeleteSnapshotButton_Click" OnClientClick="return confirm('Are you sure you want to delete this snapshot?');" />
+                        </div>
                         <div class="mb-3">
                             <strong>Note:</strong>
                             <asp:Label ID="SnapshotNoteLabel" runat="server" />

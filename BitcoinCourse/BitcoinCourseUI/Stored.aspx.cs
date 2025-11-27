@@ -225,5 +225,25 @@ namespace BitcoinCourseUI
         {
             RegisterAsyncTask(new PageAsyncTask(async () => await LoadSnapshotDetails(CurrentSnapshotId)));
         }
+
+        protected async void DeleteSnapshotButton_Click(object sender, EventArgs e)
+        {
+            if (CurrentSnapshotId <= 0)
+            {
+                return;
+            }
+
+            var success = await _condeskService.DeleteSnapshotAsync(CurrentSnapshotId);
+
+            if (success)
+            {
+                // Hide detail panel
+                SnapshotDetailPanel.Visible = false;
+                CurrentSnapshotId = 0;
+                
+                // Reload snapshots list
+                await LoadSnapshots();
+            }
+        }
     }
 }

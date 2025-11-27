@@ -21,6 +21,8 @@ namespace BitcoinCourseUI
         
         protected global::System.Web.UI.WebControls.Panel SnapshotDetailPanel;
         
+        protected global::System.Web.UI.WebControls.Button DeleteSnapshotButton;
+        
         protected global::System.Web.UI.WebControls.Label SnapshotNoteLabel;
         
         protected global::System.Web.UI.WebControls.LinkButton EditNoteButton;
