@@ -17,6 +17,7 @@ namespace BitcoinCourseAPI.Services
     public class BtcDataService : IBtcDataService
     {
         private const string Url = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-EUR";
+        private readonly HashSet<string> PriceLikeFields = new HashSet<string>() { "PRICE" };
 
         private readonly HttpClient _httpClient;
         private readonly ICnbConversionService _cnbConversionService;
@@ -31,7 +32,7 @@ namespace BitcoinCourseAPI.Services
         {
             var records = new List<BtcRecord>();
 
-            var czkToEurRate = await _cnbConversionService.GetEurToCzkRate();
+            decimal eurToCzkRate = await _cnbConversionService.GetEurToCzkRate();
 
             try
             {
@@ -65,26 +66,31 @@ namespace BitcoinCourseAPI.Services
                         {
                             string valueStr;
 
-                            switch (prop.Value.ValueKind)
+                            if (PriceLikeFields.Contains(prop.Name))
                             {
-                                case JsonValueKind.String:
-                                    valueStr = prop.Value.GetString() ?? string.Empty;
-                                    break;
-                                case JsonValueKind.Number:
-                                    valueStr = prop.Value.GetRawText();
-                                    break;
-                                case JsonValueKind.True:
-                                case JsonValueKind.False:
-                                    valueStr = prop.Value.GetRawText();
-                                    break;
-                                case JsonValueKind.Null:
-                                    valueStr = string.Empty;
-                                    break;
-                                default:
-                                    // For arrays/objects preserve raw JSON
-                                    valueStr = prop.Value.GetRawText();
-                                    break;
+                                valueStr = (prop.Value.GetDecimal() * eurToCzkRate).ToString();
                             }
+                            else
+                                switch (prop.Value.ValueKind)
+                                {
+                                    case JsonValueKind.String:
+                                        valueStr = prop.Value.GetString() ?? string.Empty;
+                                        break;
+                                    case JsonValueKind.Number:
+                                        valueStr = prop.Value.GetRawText();
+                                        break;
+                                    case JsonValueKind.True:
+                                    case JsonValueKind.False:
+                                        valueStr = prop.Value.GetRawText();
+                                        break;
+                                    case JsonValueKind.Null:
+                                        valueStr = string.Empty;
+                                        break;
+                                    default:
+                                        // For arrays/objects preserve raw JSON
+                                        valueStr = prop.Value.GetRawText();
+                                        break;
+                                }
 
                             records.Add(new BtcRecord
                             {

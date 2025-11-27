@@ -5,12 +5,12 @@ namespace BitcoinCourseAPI.Services
 {
     public interface ICnbConversionService
     {
-        Task<double> GetEurToCzkRate();
+        Task<decimal> GetEurToCzkRate();
     }
 
     public class CnbConversionService : ICnbConversionService
     {
-        public async Task<double> GetEurToCzkRate()
+        public async Task<decimal> GetEurToCzkRate()
         {
             var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
             var url = $"https://api.cnb.cz/cnbapi/exrates/daily?date={today}&lang=EN";
@@ -33,7 +33,7 @@ namespace BitcoinCourseAPI.Services
                     {
                         if (item.TryGetProperty("rate", out var rateEl) && rateEl.ValueKind == JsonValueKind.Number)
                         {
-                            var rate = rateEl.GetDouble();
+                            var rate = rateEl.GetDecimal();
                             return rate;
                         }
                     }
