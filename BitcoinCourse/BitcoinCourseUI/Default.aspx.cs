@@ -19,6 +19,8 @@ namespace BitcoinCourseUI
 
         // Control declaration for GridView
         protected global::System.Web.UI.WebControls.GridView GridViewData;
+        protected global::System.Web.UI.WebControls.Button SaveSnapshotButton;
+        protected global::System.Web.UI.WebControls.Label SnapshotStatus;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -48,6 +50,29 @@ namespace BitcoinCourseUI
         {
             // Run the same async load on timer tick
             RegisterAsyncTask(new PageAsyncTask(LoadData));
+        }
+
+        protected async void SaveSnapshotButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SnapshotStatus.Text = "Saving...";
+                var apiBase = "http://localhost:5041"; // adjust port if API runs on different port
+                using (var wc = new WebClient())
+                {
+                    wc.Headers[HttpRequestHeader.ContentType] = "application/json";
+                    // POST with empty body
+                    var json = await wc.UploadStringTaskAsync(new Uri(apiBase + "/api/Snapshots/Save"), "POST", string.Empty);
+                    var js = new JavaScriptSerializer();
+                    var obj = js.Deserialize<Dictionary<string, object>>(json);
+                    var saved = obj != null && obj.ContainsKey("saved") ? obj["saved"].ToString() : "0";
+                    SnapshotStatus.Text = $"Saved {saved} records";
+                }
+            }
+            catch (Exception ex)
+            {
+                SnapshotStatus.Text = "Error: " + ex.Message;
+            }
         }
     }
 }

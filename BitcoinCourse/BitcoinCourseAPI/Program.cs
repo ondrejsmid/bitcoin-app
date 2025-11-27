@@ -10,6 +10,7 @@ builder.Services.AddOpenApi();
 // Register BtcDataService with an HttpClient
 builder.Services.AddHttpClient<IBtcDataService, BtcDataService>();
 builder.Services.AddTransient<ICnbConversionService, CnbConversionService>();
+builder.Services.AddTransient<ISnapshotsService, SnapshotsService>();
 
 var app = builder.Build();
 

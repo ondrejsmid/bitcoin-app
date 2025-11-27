@@ -5,7 +5,14 @@
     <main>
         <section class="row" aria-labelledby="staticTableTitle">
             <h2 id="staticTableTitle">Sample Dynamic Table</h2>
+
             <asp:Panel ID="PanelTable" runat="server">
+                <!-- Save snapshot button -->
+                <div class="mb-3">
+                    <asp:Button ID="SaveSnapshotButton" runat="server" CssClass="btn btn-primary" Text="Save Snapshot" OnClick="SaveSnapshotButton_Click" />
+                    <asp:Label ID="SnapshotStatus" runat="server" CssClass="ms-3" />
+                </div>
+
                 <asp:UpdatePanel ID="upGrid" runat="server" UpdateMode="Conditional">
                     <ContentTemplate>
                         <asp:Timer ID="RefreshTimer" runat="server" Interval="5000" OnTick="RefreshTimer_Tick" />
