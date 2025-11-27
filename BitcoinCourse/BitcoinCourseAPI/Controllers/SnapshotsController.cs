@@ -19,5 +19,18 @@ namespace BitcoinCourseAPI.Controllers
             await _snapshotsService.SaveRecordsAsync(records);
             return Ok();
         }
+
+        [HttpGet("Last")]
+        public async Task<IActionResult> GetLast()
+        {
+            var lastSnapshot = await _snapshotsService.GetLastSnapshotAsync();
+            
+            if (lastSnapshot == null)
+            {
+                return Ok(null);
+            }
+
+            return Ok(lastSnapshot);
+        }
     }
 }
