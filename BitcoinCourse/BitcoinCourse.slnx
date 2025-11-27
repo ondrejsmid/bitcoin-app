@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="BitcoinCourseAPI/BitcoinCourseAPI.csproj" Id="d8bbd48e-c33c-4920-b44a-d355b01a787a" />
   <Project Path="BitcoinCourseUI/BitcoinCourseUI.csproj" Id="74604c81-2af4-4b9a-af68-0ba227fffdd9" />
+  <Project Path="Contracts/Contracts.csproj" Id="b982ee14-1d81-4159-b333-f3b0a4e8396b" />
 </Solution>

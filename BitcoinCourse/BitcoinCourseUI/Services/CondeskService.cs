@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
@@ -17,83 +14,77 @@ namespace BitcoinCourseUI.Services
 
     internal class CondeskService : ICondeskService
     {
+        private const string LocalBase = "http://localhost:5041"; // adjust port if your API uses another one
+
         public async Task<List<BtcRecord>> GetBtcRecordsAsync()
         {
-            const string url = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-EUR";
+            // Only use local backend API
+            var records = new List<BtcRecord>();
 
-            List<BtcRecord> records = new List<BtcRecord>();
             try
             {
-                using (var wc = new WebClient())
+                var local = await GetBtcDataFromLocalApi();
+                if (local != null && local.Any())
                 {
-                    var json = await wc.DownloadStringTaskAsync(new Uri(url));
-                    var js = new JavaScriptSerializer();
-                    var root = js.Deserialize<Dictionary<string, object>>(json);
-
-                    Dictionary<string, object> instrumentDict = null;
-
-                    if (root != null && root.TryGetValue("Data", out var dataObj) && dataObj != null)
-                    {
-                        var dataDict = dataObj as Dictionary<string, object>;
-                        if (dataDict != null)
-                        {
-                            if (dataDict.TryGetValue("BTC-EUR", out var instObj) && instObj != null)
-                            {
-                                instrumentDict = instObj as Dictionary<string, object>;
-                            }
-
-                            if (instrumentDict == null)
-                            {
-                                instrumentDict = dataDict.Values.OfType<Dictionary<string, object>>().FirstOrDefault();
-                            }
-                        }
-                    }
-
-                    if (instrumentDict != null)
-                    {
-                        // Add each property as a row: KEY | VALUE
-                        foreach (var kvp in instrumentDict)
-                        {
-                            string key = kvp.Key;
-                            string valueStr;
-
-                            if (kvp.Value == null)
-                            {
-                                valueStr = string.Empty;
-                            }
-                            else if (kvp.Value is Dictionary<string, object> || kvp.Value is ArrayList)
-                            {
-                                // Serialize complex nested values back to JSON string for display
-                                valueStr = js.Serialize(kvp.Value);
-                            }
-                            else
-                            {
-                                valueStr = kvp.Value.ToString();
-                            }
-
-                            records.Add(new BtcRecord
-                            {
-                                FieldName = key,
-                                Value = valueStr
-                            });
-                        }
-                    }
-
+                    records.AddRange(local);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                //dt.Rows.Add("Error", ex.Message);
-                // TODO logging
+                // If local API fails, return empty list (or consider rethrowing/logging)
+                return new List<BtcRecord>();
+            }
+
+            // Append EUR->CZK rate from local backend if available (optional)
+            try
+            {
+                var rate = await EurToCzkRate();
+                records.Add(new BtcRecord { FieldName = "EUR_TO_CZK", Value = rate.ToString(System.Globalization.CultureInfo.InvariantCulture) });
+            }
+            catch
+            {
+                // ignore rate retrieval failures
             }
 
             return records;
+        }
+
+        private async Task<List<BtcRecord>> GetBtcDataFromLocalApi()
+        {
+            using (var wc = new WebClient())
+            {
+                var url = LocalBase + "/api/BtcData";
+                var json = await wc.DownloadStringTaskAsync(new Uri(url));
+                var js = new JavaScriptSerializer();
+                var list = js.Deserialize<List<BtcRecord>>(json);
+                return list ?? new List<BtcRecord>();
+            }
+        }
+
+        private async Task<decimal> EurToCzkRate()
+        {
+            using (var wc = new WebClient())
+            {
+                var url = LocalBase + "/api/EurToCzk";
+                var json = await wc.DownloadStringTaskAsync(new Uri(url));
+                var js = new JavaScriptSerializer();
+                var dict = js.Deserialize<Dictionary<string, object>>(json);
+                if (dict != null && dict.TryGetValue("rate", out var rateObj))
+                {
+                    if (decimal.TryParse(rateObj.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var rate))
+                    {
+                        return rate;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Failed to get response from EurToCzk endpoint.");
         }
     }
 
     internal class BtcRecord
     {
-        public string FieldName;
-        public string Value;
+        public string FieldName { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
     }
 }
