@@ -1,10 +1,10 @@
 # Bitcoin App
 
-A web application for viewing live Bitcoin price data and managing snapshots with notes.
+Webová aplikace pro sledování aktuálních cen Bitcoinu a správu snapshotů s poznámkami.
 
 ## Stručný popis projektu
 
-Aplikace umožňuje sledovat aktuální cenu Bitcoinu v EUR a CZK s automatickou aktualizací každých 5 sekund. Uživatel může ukládat snapshoty s vlastními poznámkami, prohlížet je, filtrovat, řadit a upravovat. Aplikace je postavena na ASP.NET Core Web API pro backend, ASP.NET Web Forms pro frontend a SQL Server pro ukládání dat.
+Aplikace umožňuje sledovat aktuální cenu Bitcoinu v EUR a CZK s automatickou aktualizací každých 5 sekund. Stránka Live Data se automaticky obnovuje každých 5 sekund, takže uživatel vždy vidí nejaktuálnější data bez nutnosti manuálního refreshe. Uživatel může ukládat snapshoty s vlastními poznámkami, prohlížet je, filtrovat, řadit a upravovat. Aplikace je postavena na ASP.NET Core Web API pro backend, ASP.NET Web Forms pro frontend a SQL Server pro ukládání dat.
 
 ### Jak smazat snapshot
 
@@ -48,7 +48,7 @@ Open your browser and navigate to the frontend URL (e.g., http://localhost:5000)
 
 - **Home** (`/Default.aspx`) — Live Bitcoin price data from CoinDesk with EUR→CZK conversion
   - View real-time BTC-EUR prices
-  - Automatic 5-second refresh
+  - Page automatically refreshes every 5 seconds with latest data
   - Save snapshots with custom notes
   
 - **Stored Data** (`/Stored.aspx`) — View and manage saved snapshots
@@ -61,7 +61,7 @@ Open your browser and navigate to the frontend URL (e.g., http://localhost:5000)
 ## Features
 
 - ✅ Live Bitcoin prices from CoinDesk API
-- ✅ EUR to CZK exchange rate conversion via CNB
+- ✅ EUR to CZK exchange rate conversion via CNB for price-like fields
 - ✅ 5-second auto-refresh on home page
 - ✅ Save snapshots with custom notes
 - ✅ View all saved snapshots

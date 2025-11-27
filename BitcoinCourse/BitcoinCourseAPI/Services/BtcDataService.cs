@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using BitcoinCourseAPI.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,6 @@ namespace BitcoinCourseAPI.Services
     public class BtcDataService : IBtcDataService
     {
         private const string Url = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-EUR";
-        private readonly HashSet<string> PriceLikeFields = new HashSet<string>() { "PRICE" };
 
         private readonly HttpClient _httpClient;
         private readonly ICnbConversionService _cnbConversionService;
@@ -66,7 +66,7 @@ namespace BitcoinCourseAPI.Services
                         {
                             string valueStr;
 
-                            if (PriceLikeFields.Contains(prop.Name))
+                            if (MoneyFields.PriceLikeFields.Contains(prop.Name))
                             {
                                 valueStr = (prop.Value.GetDecimal() * eurToCzkRate).ToString();
                             }
